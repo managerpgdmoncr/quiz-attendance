@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Premium Quiz Attendance Terminal</title>
-    <!-- Ultra-Stable Tailwind CSS Engine -->
+    <title>⚡ Centralized Quiz Audit & Roster Allocation Portal</title>
     <script src="https://tailwindcss.com"></script>
     <style>
         @import url('https://googleapis.com');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-mono-custom { font-family: 'JetBrains Mono', monospace; }
         .hidden { display: none !important; }
-
         @media print {
             body { background: white !important; color: black !important; }
             .no-print { display: none !important; }
             table { font-size: 11px; }
-            th, td { padding: 4px 6px !important; border: 1px solid #cbd5e1 !important; }
+            th, td { padding: 5px 8px !important; border: 1px solid #cbd5e1 !important; }
         }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 min-h-screen antialiased">
-    <!-- Main application structure containing header, admin panel, invigilator authentication, roster grid, and print preview sheet. -->
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased">
+
     <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- APP TOP NAVIGATION HEADER -->
         <header class="mb-8 flex flex-col sm:flex-row justify-between items-center bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800 relative overflow-hidden no-print">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl"></div>
             <div class="relative z-10 text-center sm:text-left mb-4 sm:mb-0">
@@ -30,43 +29,103 @@
                     <span class="text-2xl">⚡</span>
                     <h1 class="text-2xl font-extrabold tracking-tight text-white">Smart Roster</h1>
                 </div>
-                <p class="text-xs text-slate-400 font-medium mt-1 uppercase tracking-widest font-mono-custom">Quiz Attendance Portal</p>
+                <p class="text-xs text-slate-400 font-medium mt-1 uppercase tracking-widest font-mono-custom font-bold">Centralized Audit Ecosystem</p>
             </div>
             
             <div class="relative z-10 bg-slate-800/80 p-1.5 rounded-xl border border-slate-700/60 flex space-x-1 shadow-inner">
-                <button id="btn-invigilator-tab" onclick="showPanel('invigilator-auth')" class="px-5 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg cursor-pointer">
-                    📝 Invigilator View
+                <button id="tab-invig" onclick="togglePlatformMode('invig')" class="px-5 py-2.5 text-xs font-bold rounded-lg transition-all bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg cursor-pointer">
+                    📝 Hall Invigilator Call
                 </button>
-                <button id="btn-admin-tab" onclick="verifyAdminAccess()" class="px-5 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 text-slate-300 hover:text-white cursor-pointer">
-                    ⚙️ Admin Console
+                <button id="tab-admin" onclick="triggerAdminSecurityGate()" class="px-5 py-2.5 text-xs font-bold rounded-lg transition-all text-slate-300 hover:text-white cursor-pointer">
+                    ⚙️ Admin Control Hub
                 </button>
             </div>
         </header>
 
-        <main id="panel-admin" class="space-y-6 hidden no-print"></main>
-        <main id="panel-invigilator-auth" class="space-y-6 no-print"></main>
-        <main id="panel-invigilator-roster" class="hidden space-y-6 no-print"></main>
-        <div id="print-sheet" class="hidden bg-white p-2 rounded-xs"></div>
-    </div>
-    <script>
-        // Full JavaScript logic handles local storage synchronization, 75 default sample students, panel toggling, and print preparation.
-        let students = JSON.parse(localStorage.getItem('h_quiz_students')) || [];
-        let quizConfig = JSON.parse(localStorage.getItem('h_quiz_config')) || {
-            quizNo: "Quiz 03", subject: "Advanced Data Structures", room: "LHC-302",
-            assignedEmail: "test@exam.edu", date: new Date().toISOString().split('T')[0],
-            submitted: false, timestamp: null
-        };
-        if(students.length === 0) {
-            const firstNames = ["Aarav", "Ananya", "Bhavna", "Chirag", "Dev", "Esha", "Gaurav", "Ishita", "Kabir", "Meera", "Nikhil", "Pooja", "Rahul", "Riya", "Sahil", "Tanvi"];
-            const lastNames = ["Sharma", "Verma", "Gupta", "Kumar", "Singh", "Joshi", "Mehta", "Patel"];
-            for (let i = 0; i < 75; i++) {
-                students.push({
-                    id: i, roll: `RL-2026${100+i}`, name: `${firstNames[i % firstNames.length]} ${lastNames[(i+3) % lastNames.length]}`,
-                    group: `Group-${String.fromCharCode(65 + (i % 4))}`, present: true
-                });
-            }
-            localStorage.setItem('h_quiz_students', JSON.stringify(students));
-        }
-    </script>
-</body>
-</html>
+        <!-- CENTRALIZED SYSTEM ALERTS FEED -->
+        <div id="api-loading-overlay" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-800 font-bold p-4 rounded-xl text-center text-xs animate-pulse mb-6 no-print">
+            🔄 Synchronizing encrypted database records with your Centralized Google Cloud Sheet Ledger...
+        </div>
+
+        <!-- 1. HUB PLATFORM: ADMIN CONTROL INTERFACE -->
+        <main id="view-admin" class="space-y-6 hidden no-print">
+            <!-- Allocate & Dispatch Roster Module -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200/60 relative">
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-t-2xl"></div>
+                <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider mb-4 flex items-center">📌 Dispatch New Exam & Allocation Maps</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Quiz Block Number</label>
+                        <input type="text" id="adm-quiz-no" value="Quiz 04" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Subject Reference Title</label>
+                        <input type="text" id="adm-subject" value="PGDM Operations Research" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Assigned Testing Hall / Room</label>
+                        <input type="text" id="adm-room" value="Hall-B (Floor 3)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Target Invigilator Email Identity</label>
+                        <input type="email" id="adm-email" value="invigilator1@college.edu" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-4 flex justify-end mt-2">
+                        <button onclick="dispatchRosterAllocation()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-xl text-sm transition-all shadow-md cursor-pointer">
+                            🚀 Lock Allocation & Push To Live Cloud Sheet
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master Audit Stream Feed -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200/60 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">🔒 Centralized Audit Ledger Terminal</h2>
+                        <p class="text-xs text-indigo-600 font-semibold mt-0.5">Below are all historical attendance records uploaded live from exam halls.</p>
+                    </div>
+                    <button onclick="fetchAuditLogsFromCloud()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs px-4 py-2 rounded-xl transition-all border border-indigo-100 cursor-pointer">
+                        🔄 Pull Fresh Audit Logs
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/80 text-xs font-bold text-slate-400 uppercase font-mono-custom border-b border-slate-100">
+                                <th class="p-4 pl-6">Roll ID</th>
+                                <th class="p-4">Student Identity Name</th>
+                                <th class="p-4">Assigned Group</th>
+                                <th class="p-4">Roster Status</th>
+                                <th class="p-4 pr-6 text-right">Audit Submission Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-audit-tbody" class="divide-y divide-slate-100 text-sm font-medium text-slate-600">
+                            <tr><td colspan="5" class="p-6 text-center text-slate-400 italic">No audit records fetched yet. Click "Pull Fresh Audit Logs" to populate data stream.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- 2. HUB PLATFORM: INVIGILATOR AUTHENTICATION GATEWAY -->
+        <main id="view-invig-auth" class="space-y-6 no-print">
+            <div class="bg-white p-8 max-w-md mx-auto rounded-2xl shadow-xl border border-slate-200/60 text-center relative overflow-hidden mt-12">
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-500 to-indigo-500"></div>
+                <div class="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <span class="text-2xl">🔐</span>
+                </div>
+                <h2 class="text-xl font-extrabold text-slate-900 mb-1">Invigilator Verification Entry</h2>
+                <p class="text-xs text-slate-400 font-medium mb-6">Type your verified email ID to pull the specific test allocation map assigned by Admin.</p>
+                <input type="email" id="invig-login-email" value="invigilator1@college.edu" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="pullAssignedQuizRoster()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all cursor-pointer">
+                    Fetch My Assigned Roster Grid
+                </button>
+            </div>
+        </main>
+
+        <!-- 3. HUB PLATFORM: LIVE ROLL CALL & ATTENDANCE TERMINAL -->
+        <main id="view-invig-roster" class="hidden space-y-6 no-print">
+            <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl border border-slate-800 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center relative overflow-hidden">
+                <div>
+                    <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] px-3 py-1 rounded-full font-mono-custom uppercase tracking-wider font-bold">Roster Call Stream Connected</span>
