@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ Centralized Quiz Audit & Roster Allocation Portal</title>
-    <script src="https://tailwindcss.com"></script>
+    <!-- Stable Core Tailwind Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://googleapis.com');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -49,43 +50,41 @@
 
         <!-- 1. HUB PLATFORM: ADMIN CONTROL INTERFACE -->
         <main id="view-admin" class="space-y-6 hidden no-print">
-            <!-- Allocate & Dispatch Roster Module -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200/60 relative">
                 <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-t-2xl"></div>
                 <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider mb-4 flex items-center">📌 Dispatch New Exam & Allocation Maps</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-400 mb-1">Quiz Block Number</label>
-                        <input type="text" id="adm-quiz-no" value="Quiz 04" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                        <input type="text" id="adm-quiz-no" value="Quiz 04" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 mb-1">Subject Reference Title</label>
-                        <input type="text" id="adm-subject" value="PGDM Operations Research" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                        <input type="text" id="adm-subject" value="PGDM Operations Research" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 mb-1">Assigned Testing Hall / Room</label>
-                        <input type="text" id="adm-room" value="Hall-B (Floor 3)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                        <input type="text" id="adm-room" value="Hall-B (Floor 3)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 mb-1">Target Invigilator Email Identity</label>
-                        <input type="email" id="adm-email" value="invigilator1@college.edu" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                        <input type="email" id="adm-email" value="invigilator1@college.edu" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none">
                     </div>
                     <div class="md:col-span-2 lg:col-span-4 flex justify-end mt-2">
-                        <button onclick="dispatchRosterAllocation()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-xl text-sm transition-all shadow-md cursor-pointer">
+                        <button onclick="dispatchRosterAllocation()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-xl text-sm transition-all cursor-pointer">
                             🚀 Lock Allocation & Push To Live Cloud Sheet
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Master Audit Stream Feed -->
             <div class="bg-white rounded-2xl shadow-md border border-slate-200/60 overflow-hidden">
                 <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-lg font-bold text-slate-900">🔒 Centralized Audit Ledger Terminal</h2>
                         <p class="text-xs text-indigo-600 font-semibold mt-0.5">Below are all historical attendance records uploaded live from exam halls.</p>
                     </div>
-                    <button onclick="fetchAuditLogsFromCloud()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs px-4 py-2 rounded-xl transition-all border border-indigo-100 cursor-pointer">
+                    <button onclick="fetchAuditLogsFromCloud()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs px-4 py-2 rounded-xl border border-indigo-100 cursor-pointer">
                         🔄 Pull Fresh Audit Logs
                     </button>
                 </div>
@@ -118,7 +117,7 @@
                 <h2 class="text-xl font-extrabold text-slate-900 mb-1">Invigilator Verification Entry</h2>
                 <p class="text-xs text-slate-400 font-medium mb-6">Type your verified email ID to pull the specific test allocation map assigned by Admin.</p>
                 <input type="email" id="invig-login-email" value="invigilator1@college.edu" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button onclick="pullAssignedQuizRoster()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all cursor-pointer">
+                <button onclick="pullAssignedQuizRoster()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-3 px-4 rounded-xl shadow-md cursor-pointer">
                     Fetch My Assigned Roster Grid
                 </button>
             </div>
@@ -129,3 +128,7 @@
             <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl border border-slate-800 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center relative overflow-hidden">
                 <div>
                     <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] px-3 py-1 rounded-full font-mono-custom uppercase tracking-wider font-bold">Roster Call Stream Connected</span>
+                    <h2 id="meta-card-title" class="text-2xl font-extrabold tracking-tight mt-2 text-white">Loading...</h2>
+                    <p id="meta-card-sub" class="text-xs text-slate-400 font-medium mt-1 font-mono-custom">Loading parameters...</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer select-none">
